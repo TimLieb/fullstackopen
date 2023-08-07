@@ -3,12 +3,17 @@ import SearchFilter from "./components/SearchFilter.js";
 import Form from "./components/Form.js";
 import Person from "./components/Person.js";
 import personService from "./services/persons.js";
+import SuccessMessage from "./components/SuccessMessage.js";
+import "./index.css";
+import ErrorMessage from "./components/ErrorMessage.js";
 
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
     const [nameFilter, setNewFilterName] = useState("");
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     useEffect(() => {
         personService
@@ -45,7 +50,7 @@ const App = () => {
             number: newNumber,
         };
 
-        if (existingPerson !== null) {
+        if (existingPerson != null) {
             if (
                 window.confirm(
                     `${newName} is already added to phonebook, replace the old number with a new one?`
@@ -53,15 +58,27 @@ const App = () => {
             ) {
                 personService
                     .update(existingPerson.id, personObject)
-                    .then((updatedPerson) =>
+                    .then((updatedPerson) => {
                         setPersons(
                             persons.map((person) =>
                                 person.id === existingPerson.id
                                     ? updatedPerson
                                     : person
                             )
-                        )
-                    );
+                        );
+                        setSuccessMessage(`Updated ${existingPerson.name}`);
+                        setTimeout(() => {
+                            setSuccessMessage(null);
+                        }, 5000);
+                    })
+                    .catch(() => {
+                        setErrorMessage(
+                            `Information for ${existingPerson.name} has already been removed`
+                        );
+                        setTimeout(() => {
+                            setErrorMessage(null);
+                        }, 5000);
+                    });
             }
             return;
         }
@@ -71,6 +88,10 @@ const App = () => {
             setNewName("");
             setNewNumber("");
         });
+        setSuccessMessage(`Added ${personObject.name}`);
+        setTimeout(() => {
+            setSuccessMessage(null);
+        }, 5000);
     };
 
     const filteredPersons = persons.filter(
@@ -81,6 +102,8 @@ const App = () => {
     return (
         <div>
             <h1>Phonebook</h1>
+            <SuccessMessage message={successMessage} />
+            <ErrorMessage message={errorMessage} />
             <SearchFilter
                 input={nameFilter}
                 changeHandler={handleFilterChange}
