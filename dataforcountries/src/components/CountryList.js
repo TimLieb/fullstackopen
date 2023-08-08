@@ -1,20 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import weatherService from "../services/weather.js";
 
 const CountryList = ({ countries, clickHandler }) => {
     const [weather, setWeather] = useState(null);
 
+    useEffect(() => {
+        weatherService
+            .getWeather(
+                countries[0].capitalInfo.latlng[0],
+                countries[0].capitalInfo.latlng[1]
+            )
+            .then((newWeather) => setWeather(newWeather));
+    }, []);
+
     switch (true) {
         case countries.length > 10:
             return <div>Too many matches, specify another filter</div>;
         case countries.length === 1:
-            weatherService
-                .getWeather(
-                    countries[0].capitalInfo.latlng[0],
-                    countries[0].capitalInfo.latlng[1]
-                )
-                .then((newWeather) => setWeather(newWeather));
-
             return countries.map((country) => (
                 <div key={country.name.official}>
                     <div>
