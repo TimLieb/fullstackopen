@@ -17,6 +17,10 @@ function App() {
         setSearchInput(event.target.value);
     };
 
+    const clickShowHandler = (event) => {
+        setSearchInput(event.target.getAttribute("country"));
+    };
+
     const filteredCountries = countries.filter(
         (country) =>
             country.name.common
@@ -27,7 +31,10 @@ function App() {
     return (
         <div>
             <SearchBar input={searchInput} changeHandler={inputHandler} />
-            <CountryList countries={filteredCountries} />
+            <CountryList
+                countries={filteredCountries}
+                clickHandler={clickShowHandler}
+            />
         </div>
     );
 }
