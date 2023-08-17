@@ -71,9 +71,9 @@ const App = () => {
                             setSuccessMessage(null);
                         }, 5000);
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         setErrorMessage(
-                            `Information for ${existingPerson.name} has already been removed`
+                            `Person validation failed: ${error.response.data.error}`
                         );
                         setTimeout(() => {
                             setErrorMessage(null);
@@ -83,15 +83,25 @@ const App = () => {
             return;
         }
 
-        personService.create(personObject).then((returnedPerson) => {
-            setPersons(persons.concat(returnedPerson));
-            setNewName("");
-            setNewNumber("");
-        });
-        setSuccessMessage(`Added ${personObject.name}`);
-        setTimeout(() => {
-            setSuccessMessage(null);
-        }, 5000);
+        personService
+            .create(personObject)
+            .then((returnedPerson) => {
+                setPersons(persons.concat(returnedPerson));
+                setNewName("");
+                setNewNumber("");
+                setSuccessMessage(`Added ${personObject.name}`);
+                setTimeout(() => {
+                    setSuccessMessage(null);
+                }, 5000);
+            })
+            .catch((error) => {
+                setErrorMessage(
+                    `Person validation failed: ${error.response.data.error}`
+                );
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+            });
     };
 
     const filteredPersons = persons.filter(
